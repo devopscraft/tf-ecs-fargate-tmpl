@@ -65,13 +65,6 @@ module "ecr" {
 }
 
 
-//module "secrets" {
-//  source              = "./secrets"
-//  name                = var.name
-//  environment         = var.environment
-//  application-secrets = var.application-secrets
-//}
-
 module "ecs" {
   source                      = "./ecs"
   name                        = var.name
