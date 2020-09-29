@@ -26,10 +26,10 @@ variable "aws-secret-key" {
   type = string
 }
 
-variable "application-secrets" {
-  description = "A map of secrets that is passed into the application. Formatted like ENV_VAR = VALUE"
-  type        = map
-}
+//variable "application-secrets" {
+//  description = "A map of secrets that is passed into the application. Formatted like ENV_VAR = VALUE"
+//  type        = map
+//}
 
 
 variable "availability_zones" {
