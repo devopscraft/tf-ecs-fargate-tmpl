@@ -7,7 +7,7 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket  = "terraform-backend-store"
+    bucket  = "terraformbackend0001"
     encrypt = true
     key     = "terraform.tfstate"
     region  = "eu-central-1"
@@ -65,15 +65,8 @@ module "ecr" {
 }
 
 
-module "secrets" {
-  source              = "./modules/secrets"
-  name                = var.name
-  environment         = var.environment
-  application-secrets = var.application-secrets
-}
-
 module "ecs" {
-  source                      = "./modules/ecs"
+  source                      = "./ecs"
   name                        = var.name
   environment                 = var.environment
   region                      = var.aws-region
@@ -83,6 +76,7 @@ module "ecs" {
   container_port              = var.container_port
   container_cpu               = var.container_cpu
   container_memory            = var.container_memory
+  container_image             = module.ecr.aws_ecr_repository_url
   service_desired_count       = var.service_desired_count
   container_environment = [
     { name = "LOG_LEVEL",
@@ -90,8 +84,10 @@ module "ecs" {
     { name = "PORT",
     value = var.container_port }
   ]
-  container_secrets      = module.secrets.secrets_map
-  aws_ecr_repository_url = module.ecr.aws_ecr_repository_url
-  container_secrets_arns = module.secrets.application_secrets_arn
-}
 
+  container_secrets = [
+    { name = "API_KEYS",
+      valueFrom = aws_secretsmanager_secret_version.api_keys_value.arn }
+  ]
+  container_secrets_arns = aws_secretsmanager_secret_version.api_keys_value.arn
+}
